@@ -1,0 +1,199 @@
+import numpy as np
+
+rng = np.random.default_rng(1)
+s = rng.random(50)
+
+print (s)
+print (sum(s))
+print (np.sum(s))
+
+# суммирование значений и другие ф-ии
+a = np.array([[1, 2, 3, 4, 5], [6, 7, 8, 9, 10]])
+print (np.sum(a))
+print (np.sum(a, axis = 0))
+print (np.sum(a, axis = 1))
+
+print (np.min(a))
+print (np.min(a, axis = 0))
+print (np.min(a, axis = 1))
+# NaN - Not a Number
+print (np.nanmin(a))
+print (np.nanmin(a, axis = 0))
+print (np.nanmin(a, axis = 1))
+
+# Транслирование - broadcasting
+# это набор правил, позволяющий осуществлять бинарные операции с массивами разных форм, размеров
+a = np.array([0, 1, 2])
+b = np.array([5,5,5])
+
+print (a+b)
+print (a + 5)
+# пятерка транслируется: 5 -> [5, 5, 5] подстраиваясь под размер а
+a = np.array([[0, 1, 2], [3, 4, 5]])
+print (a + 5)
+
+a = np.array([0, 1, 2])
+b = np.array([[0], [1], [2]])
+print (a + b)
+
+a = np.array([0, 1, 2])
+b = np.array([5])
+
+print(a.ndim, a.shape)
+print(b.ndim, b.shape)
+# 1. если ndim не равны то добавляем единичку: b (1,) -> (1, 1)
+# 2. если shape не совпадает: a (2,3); b (1,) -> (1, 1) -> (2, 3)
+
+# 3.1
+a = np.ones((2, 3))
+b = np.arange(3)
+
+print(a.ndim, a.shape)
+print(b.ndim, b.shape)
+
+# 3.2:
+# (2, 3) - (2, 3)
+# (3,) -> (1, 3) -> (2, 3)
+
+c = a + b
+print (c, c.shape)
+
+a = np.arange(3).reshape((3,1))
+b = np.arange(3)
+
+print (a)
+print (b)
+
+# (3, 1) - (3, 1) -> (3, 3)
+# (3,) -> (1, 3) -> (3, 3)
+
+c = a + b
+print (c, c.shape)
+
+a = np.ones((3, 2))
+b = np.arange(3)
+
+# 2 (3, 2) - (3, 2) - (3, 2)
+# 1 (3,) -> (1, 3) -> (3, 3)
+
+# c = a + b ВЫЗЫВАЕТ ОШИБКУ
+
+# САМОСТОЯТЕЛЬНОЕ : изменение без ошибок
+# поменяем (3, 2) на (2, 3)
+# 2 (2, 3) - (2, 3) - (2, 3)
+# 1 (3,) -> (1, 3) -> (2, 3)
+# задача решена
+
+a = np.ones((2, 3))
+b = np.arange(3)
+c = a + b
+print (c)
+
+x = np.array([
+    [1,2,3,4,5,6,7,8,9],
+    [9,8,7,6,5,4,3,2,1]])
+xmean = x.mean(0)
+print(xmean)
+
+xcenter = x - xmean
+print (xcenter)
+
+xmean1 = x.mean(1)
+print(xmean1)
+xmean1 = xmean1[:, np.newaxis]
+print(xmean1)
+
+xcenter1 = x - xmean1
+print (xcenter1)
+
+x = np.linspace(0, 5, 50)
+# сделаем при сложении большую матрицу, а не строчку
+y = np.linspace(0, 5, 50)[:, np.newaxis]
+# рандомная функция, получаемая в том числе с помощью трансляции
+z = np.sin(x)**3 + np.cos(20 + y*x) * np.sin(y)
+
+print (z.shape)
+# двухмерное представление трехмерной функции - 
+import matplotlib.pyplot as plt
+plt.imshow(z)
+plt.colorbar()
+plt.show()
+
+print (z.shape)
+
+# проверка условия
+x = np.array([1,2,3,4,5])
+y = np.array([[1,2,3,4,5], [5,6,7,8,9]])
+
+print (x < 3) # каждый элемент отдельно
+print (np.less(x, 3)) # то же самое
+print (np.sum(x < 3)) # количество элементов
+
+print(np.sum(y < 4, axis = 0))
+print(np.sum(y < 4, axis = 1))
+print(np.sum(y < 4))
+
+# & | ^ -
+
+# САМОСТОЯТЕЛЬНО - y: к-во элементов по обоим размерностям, значения которых больше 3 и меньше 9
+
+print(np.sum(y < 3, axis = 0), np.sum(y < 3, axis = 1))
+
+# маски
+x = np.array([1,2,3,4,5])
+y = print (x < 3)
+
+print (x[x < 3])
+
+# векторизация индекса
+x = np.array([1,2,3,4,5,6,7,8,9])
+index = [[1,5,7], [2, 4, 8]]
+
+print (x[index]) # форма результата отражает форму массива индексов а не форму исходного
+
+x = np.arange(12).reshape((3,4))
+print(x)
+print(x[2])
+print(x[2, [2,0,1]])
+print(x[1:, [2,0,1]])
+
+x = np.arange(10)
+i = np.array([2,1,8,4])
+
+print(x)
+x[i] = 999
+print(x)
+
+# сортировка
+x = [3,2,3,5,2,6,7,3,6,3,2]
+
+print (sorted(x))
+print (np.sort(x))
+
+# Структурированные массивы
+data = np.zeros(4, dtype = {
+    'names':(
+        'name', 'age'
+    ),
+    'formats':(
+        'U10', 'i4'
+    )
+})
+
+print(data.dtype)
+
+name = ['name1', 'name2', 'name3', 'name4']
+age = [10, 20, 30, 40]
+
+data['name'] = name
+data['age'] = age
+
+print(data)
+print(data['age']>20)
+print(data[data['age']>20]['name'])
+
+# Массивы записей
+data_rec = data.view(np.recarray)
+print(data_rec)
+print(data_rec[0])
+print(data_rec[-1].name)
