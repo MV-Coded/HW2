@@ -1,0 +1,327 @@
+import numpy as np
+import pandas as pd
+
+# Дз будет расположено по ходу конспекта и отмечено в комменариях под соответствующими номерами (пример: Задание №1 ...)
+index = [
+    ('city_1', 2010),
+    ('city_1', 2020),
+    ('city_2', 2010),
+    ('city_2', 2020),
+    ('city_3', 2010),
+    ('city_3', 2020),
+]
+population = [
+    101,
+    201,
+    102,
+    202,
+    103,
+    203
+]
+
+pop = pd.Series(population, index = index)
+
+print (pop)
+# костыльный вывод
+print(pop[[i for i in pop.index if i[1] == 2020 ]])
+
+# MultiIndex
+index = pd.MultiIndex.from_tuples(index)
+
+pop = pop.reindex(index)
+print (pop)
+# все примеры за 2020:
+print (pop[:, 2020])
+
+# DataFrame
+pop_df = pop.unstack()
+print (pop_df)
+# из DF в MI
+print (pop_df.stack())
+
+# тоже самое но добавим еще измерение
+index = [
+    ('city_1', 2010, 1),
+    ('city_1', 2010, 2),
+    
+    ('city_1', 2020, 1),
+    ('city_1', 2020, 2),
+    
+    ('city_2', 2010, 1),
+    ('city_2', 2010, 2),
+    
+    ('city_2', 2020, 1),
+    ('city_2', 2020, 2),
+    
+    ('city_3', 2010, 1),
+    ('city_3', 2010, 2),
+    
+    ('city_3', 2020, 1),
+    ('city_3', 2020, 2),
+]
+population = [ 
+    101,
+    1010,
+    201,
+    2010,
+    102,
+    1020,
+    202,
+    2020,
+    103,
+    1030,
+    203,
+    2030
+]
+
+pop = pd.Series(population, index = index)
+print (pop)
+
+index = pd.MultiIndex.from_tuples(index)
+
+pop = pop.reindex(index)
+print (pop)
+
+print (pop[:, 2010])
+print (pop[:, :, 2])
+
+pop_df = pop.unstack()
+print (pop_df)
+
+index = pd.MultiIndex.from_tuples(index)
+
+pop = pop.reindex(index)
+print (pop)
+
+print (pop[:, 2010])
+print (pop[:, :, 2])
+
+pop_df = pop.unstack()
+print (pop_df)
+
+index = pd.MultiIndex.from_tuples(index)
+
+pop = pop.reindex(index)
+print (pop)
+
+print (pop[:, 2010])
+print (pop[:, :, 2])
+
+pop_df = pop.unstack()
+print (pop_df)
+
+data = { 
+    ('city_1', 2010): 100,
+    ('city_1', 2020): 200,
+    ('city_2', 2010): 1001,
+    ('city_2', 2020): 2001,
+}
+
+s = pd.Series(data)
+print(s)
+s.index.names = ['city', 'year']
+print(s)
+
+index = pd.MultiIndex.from_product( # (1)
+    [
+        ['city_1', 'city_2'],
+        [2010, 2020]
+    ],
+    names = ['city', 'year']
+)
+print (index)
+
+columns = pd.MultiIndex.from_product(
+    [
+        ['person_1', 'person_2', 'person_3'],
+        ['job_1', 'job_2']
+    ],
+    names = ['worker', 'job']
+)
+
+rng = np.random.default_rng(1)
+
+data = rng.random((4, 6))
+print (data)
+
+data_df = pd.DataFrame(data, index = index, columns = columns)
+print (data_df)
+
+# Задание №2 
+# из этих данных выбрать данные по
+
+# 2020 году для всех столбцов
+
+data_df_1 = data_df.loc[(slice(None), 2020), :]
+print (data_df_1)
+
+# job_1 для всех строк
+
+data_df_2 = data_df.loc[:, (slice(None), 'job_1')]
+print (data_df_2)
+
+# city_1 и job_2
+data_df_3 = data_df.loc[('city_1', slice(None)), (slice(None), 'job_2')]
+print (data_df_3)
+print("/////////////") # разделитель
+
+# Задание №3 взять датафрейм (1) и выполнить запрос на получение данных 
+# все данные по person_1 и person_3
+
+data_df_4 = data_df.loc[:, (['person_1','person_3'], slice(None))]
+print (data_df_4)
+
+# все данные по city_1 и первым двум person - ам. (срезы)
+data_df_5 = data_df.loc[('city_1', slice(None)), (slice('person_1','person_2'), slice(None))]
+print (data_df_5)
+
+# пример использования pd.IndexSlice
+# основа - все данные по city_1 и первым двум person - ам.
+
+data_df_default = data_df.loc[('city_1', slice(None)), (slice('person_1','person_2'), slice(None))]
+data_df_indslice = data_df.loc[pd.IndexSlice['city_1', :], pd.IndexSlice['person_1':'person_2', :]]
+# Одинаковый вывод, но интуитивно понятнее с IndexSlice.
+
+# Индексы и срезы
+data = { 
+    ('city_1', 2010): 100,
+    ('city_1', 2020): 200,
+    ('city_2', 2010): 1001,
+    ('city_2', 2020): 2001,
+    ('city_3', 2010): 10001,
+    ('city_3', 2020): 20001,
+}
+
+s = pd.Series(data)
+s.index.names = ['city', 'year']
+
+print (s['city_1', 2010])
+print (s['city_1'])
+
+print (s.loc['city_1':'city_2']) # срез включительно от того до того
+print (s[:, 2010])
+
+print (s[s > 2000])
+print (s[['city_1', 'city_3']])
+
+# Перегруппировка мультииндексов
+rng = np.random.default_rng(1)
+
+index = pd.MultiIndex.from_product(
+    [
+        ['a', 'c', 'b'],
+        [1, 2]
+    ]
+)
+
+data = pd.Series(rng.random(6), index = index)
+data.index.names = ['char', 'int']
+
+print(data)
+# print(data['a':'b']) Предполагает сортированные индексы. Иначе ошибка.
+# Пересортируем индексы
+data = data.sort_index()
+print(data['a':'b']) 
+
+# Перегруппировка мультииндексов
+rng = np.random.default_rng(1)
+
+index = pd.MultiIndex.from_product(
+    [
+        ['a', 'c', 'b'],
+        [1, 2]
+    ]
+)
+
+data = pd.Series(rng.random(6), index = index)
+data.index.names = ['char', 'int']
+
+print(data)
+# print(data['a':'b']) Предполагает сортированные индексы. Иначе ошибка.
+# Пересортируем индексы
+data = data.sort_index()
+print(data['a':'b']) 
+
+# Еще пример со старыми данными
+index = [ 
+    ('city_1', 2010, 1),
+    ('city_1', 2010, 2),
+    
+    ('city_1', 2020, 1),
+    ('city_1', 2020, 2),
+    
+    ('city_2', 2010, 1),
+    ('city_2', 2010, 2),
+    
+    ('city_2', 2020, 1),
+    ('city_2', 2020, 2),
+    
+    ('city_3', 2010, 1),
+    ('city_3', 2010, 2),
+    
+    ('city_3', 2020, 1),
+    ('city_3', 2020, 2),
+]
+population = [ 
+    101,
+    1010,
+    201,
+    2010,
+    102,
+    1020,
+    202,
+    2020,
+    103,
+    1030,
+    203,
+    2030
+]
+
+pop = pd.Series(population, index = index)
+print (pop)
+print("/////")
+i = pd.MultiIndex.from_tuples(index)
+pop = pop.reindex(i)
+print(pop)
+print(pop.unstack())
+print(pop.unstack(level = 0))
+print(pop.unstack(level = 1))
+print(pop.unstack(level = 2))
+
+# numpy конкатенация
+x = [1,2,3]
+y = [4,5,6]
+z = [7,8,9]
+print(np.concatenate([x,y,z]))
+x = [[1,2,3]]
+y = [[4,5,6]]
+z = [[7,8,9]]
+print(np.concatenate([x,y,z]))
+print(np.concatenate([x,y,z], axis = 0))
+print(np.concatenate([x,y,z], axis = 1))
+
+# pandas конкатенация
+ser1 = pd.Series(['a', 'b', 'c'], index = [1, 2, 3])
+ser2 = pd.Series(['d', 'e', 'f'], index = [4, 5, 6])
+
+print (pd.concat([ser1, ser2]))
+
+# индексы могут дублироваться но это помешает доступу к ним
+ser1 = pd.Series(['a', 'b', 'c'], index = [1, 2, 3])
+ser2 = pd.Series(['d', 'e', 'f'], index = [1, 2, 6])
+
+print (pd.concat([ser1, ser2])) # OK
+# если такое не нужно то
+print (pd.concat([ser1, ser2], verify_integrity=False)) # True = NOT OK
+
+print (pd.concat([ser1, ser2], ignore_index=True)) # True = Перезапись индексов
+
+print (pd.concat([ser1, ser2], keys = ['x', 'y'])) # keys - создание индексов
+
+# Задание №4 Пример inner и outer джоинов для Series
+ser1 = pd.Series(['a', 'b', 'c'], index = [1, 2, 3])
+ser2 = pd.Series(['b', 'c', 'f'], index = [1, 5, 3])
+# все индексы объединяются, а недостающие добавляются со значением NaN
+print (pd.concat([ser1, ser2], axis=1, join = 'outer'))
+# объединяются все совпадающие в серии индексы, а недостающие не добавляются
+print (pd.concat([ser1, ser2], axis=1, join = 'inner'))
